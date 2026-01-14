@@ -37,6 +37,11 @@ def create_items(p: Persona):
 
     return p
 
+@app.get("/items/count")
+def get_count():
+    df = pd.read_csv(CSV_FILE)
+    return {"count": len(df)}
+
 @app.get("/items/{id}")
 def get_item(id: int):
     df = pd.read_csv(CSV_FILE)
@@ -44,4 +49,3 @@ def get_item(id: int):
     if p.empty:
         raise HTTPException(status_code=404, detail="Persona non trovata")
     return p.to_dict(orient="records")[0]
-
