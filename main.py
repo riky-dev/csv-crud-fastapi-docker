@@ -62,3 +62,17 @@ def delete_item(id: int):
     df.to_csv(CSV_FILE, index=False)
     
     return {"message": "Persona cancellata con successo"}
+
+@app.put("/items/{id}")
+def update_item(id: int, p: Persona):
+    df = pd.read_csv(CSV_FILE)
+    
+    if id not in df['id'].values:
+       raise HTTPException(status_code=400, detail="Persona non trovata")
+    
+    colonne = ["nome", "cognome", "codice_fiscale"]
+    dati_aggiornati = [p.nome, p.cognome, p.codice_fiscale]
+    df.loc[df['id'] == id, colonne] = dati_aggiornati
+    
+    df.to_csv(CSV_FILE, index=False)
+    return p
