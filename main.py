@@ -46,6 +46,19 @@ def get_count():
 def get_item(id: int):
     df = pd.read_csv(CSV_FILE)
     p = df[df['id'] == id]
+
     if p.empty:
         raise HTTPException(status_code=404, detail="Persona non trovata")
+    
     return p.to_dict(orient="records")[0]
+
+@app.delete("/items/{id}")
+def delete_item(id: int):
+    df = pd.read_csv(CSV_FILE)
+    if id not in df['id'].values:
+        raise HTTPException(status_code=400, detail="Persona non trovata")
+    
+    df = df[df['id'] != id]
+    df.to_csv(CSV_FILE, index=False)
+    
+    return {"message": "Persona cancellata con successo"}
