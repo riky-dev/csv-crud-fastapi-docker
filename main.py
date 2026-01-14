@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pandas as pd
 import os
@@ -23,4 +23,17 @@ async def root():
 @app.get("/items/")
 def get_items():
     df = pd.read_csv(CSV_FILE)
-    return df.to_dict(orient="")
+    return df.to_dict(orient="records")
+
+@app.post("/items/")
+def create_items(p: Persona):
+    df = pd.read_csv(CSV_FILE)
+
+    if p.id in df['id'].values:
+        raise HTTPException(status_code=400, detail="ID duplicato")
+    
+    df.loc[len(df)] = [p.id, p.nome, p.cognome, p.codice_fiscale]
+    df.to_csv(CSV_FILE, index=False)
+
+    return p
+
