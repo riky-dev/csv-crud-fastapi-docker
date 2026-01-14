@@ -68,6 +68,9 @@ def delete_item(id: int):
 @app.put("/items/{id}")
 def update_item(id: int, p: Persona):
     df = pd.read_csv(CSV_FILE)
+
+    if p.id != id:
+        raise HTTPException(status_code=400, detail="ID nel body non coincide con ID nell'URL")
     
     if id not in df['id'].values:
        raise HTTPException(status_code=400, detail="Persona non trovata")
